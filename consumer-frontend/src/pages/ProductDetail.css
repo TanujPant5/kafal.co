@@ -37,7 +37,7 @@
 @media (min-width: 768px) {
   .product-detail-page {
     display: grid;
-    grid-template-columns: 45% 50%;
+    grid-template-columns: 35% 60%;
     gap: 0 5%;
     max-width: 1000px;
     margin: 0 auto;
