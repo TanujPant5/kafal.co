@@ -191,8 +191,9 @@ const ProductDetail = () => {
             </>
           )}
         </button>
+      </div>
 
-        <hr className="divider-thin" style={{ marginTop: '32px' }} />
+      <hr className="divider-thin" style={{ marginTop: '48px' }} />
 
         {/* Reviews Section */}
         <div className="product-reviews-section">
@@ -315,7 +316,6 @@ const ProductDetail = () => {
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

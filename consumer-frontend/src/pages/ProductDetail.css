@@ -37,23 +37,23 @@
 @media (min-width: 768px) {
   .product-detail-page {
     display: grid;
-    grid-template-columns: 1fr;
-    max-width: 700px;
+    grid-template-columns: 45% 50%;
+    gap: 0 5%;
+    max-width: 1000px;
     margin: 0 auto;
-  }
-}
-
-@media (min-width: 1024px) {
-  .product-detail-page {
-    display: block;
-    max-width: 900px;
+    align-items: start;
   }
 
-  .product-detail-page .image-gallery {
-    float: left;
-    width: 50%;
-    margin-right: var(--space-xl);
-    margin-bottom: var(--space-lg);
+  .back-btn {
+    grid-column: 1 / -1;
+  }
+
+  .product-detail-page > .divider-thin {
+    grid-column: 1 / -1;
+  }
+
+  .product-reviews-section {
+    grid-column: 1 / -1;
   }
 
   .product-detail-info {
