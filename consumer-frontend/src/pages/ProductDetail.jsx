@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ShoppingCart, Check } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Check, Star } from 'lucide-react';
 import axios from 'axios';
 import { useCart } from '../context/CartContext';
 import './ProductDetail.css';
@@ -153,6 +153,67 @@ const ProductDetail = () => {
             </>
           )}
         </button>
+
+        <hr className="divider-thin" style={{ marginTop: '32px' }} />
+
+        {/* Reviews Section */}
+        <div className="product-reviews-section">
+          <h3 className="reviews-title">Customer Reviews</h3>
+          <div className="reviews-summary">
+            <div className="stars">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} size={16} fill={i < 4 ? "var(--secondary)" : "none"} color={i < 4 ? "var(--secondary)" : "var(--border)"} />
+              ))}
+              <span className="rating-score">4.8 out of 5</span>
+            </div>
+            <span className="review-count">Based on 12 reviews</span>
+          </div>
+
+          <div className="reviews-list">
+            {[
+              {
+                id: 1,
+                name: "Rohit J.",
+                date: "October 12, 2025",
+                rating: 5,
+                text: "Really authentic quality. Reminds me of home in Uttarakhand. Highly recommended!",
+                verified: true,
+              },
+              {
+                id: 2,
+                name: "Sneha B.",
+                date: "September 28, 2025",
+                rating: 5,
+                text: "Beautiful craftsmanship. The delivery was fast and the packaging was very secure.",
+                verified: true,
+              },
+              {
+                id: 3,
+                name: "Amit N.",
+                date: "August 15, 2025",
+                rating: 4,
+                text: "Good product, exactly as described. Will definitely buy more from here for our next puja.",
+                verified: true,
+              }
+            ].map(review => (
+              <div key={review.id} className="review-card">
+                <div className="review-header">
+                  <div className="reviewer-info">
+                    <span className="reviewer-name">{review.name}</span>
+                    {review.verified && <span className="verified-badge">Verified Buyer</span>}
+                  </div>
+                  <span className="review-date">{review.date}</span>
+                </div>
+                <div className="review-stars">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={14} fill={i < review.rating ? "var(--secondary)" : "none"} color={i < review.rating ? "var(--secondary)" : "var(--border)"} />
+                  ))}
+                </div>
+                <p className="review-text">{review.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
