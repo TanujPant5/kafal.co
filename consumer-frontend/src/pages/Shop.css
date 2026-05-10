@@ -1,0 +1,8 @@
+.shop-page {
+  padding-top: var(--space-md);
+  padding-bottom: var(--space-xl);
+}
+
+.shop-title {
+  margin-bottom: var(--space-md);
+}

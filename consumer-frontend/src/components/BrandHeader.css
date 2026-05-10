@@ -1,0 +1,16 @@
+.brand-header {
+  text-align: center;
+  padding: 20px 16px 12px;
+  background-color: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.brand-name {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.8rem;
+  color: var(--primary);
+  letter-spacing: -0.02em;
+}
