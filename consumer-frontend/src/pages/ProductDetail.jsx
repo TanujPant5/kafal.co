@@ -16,7 +16,12 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
   const [added, setAdded] = useState(false);
-
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [newReviewName, setNewReviewName] = useState('');
+  const [newReviewRating, setNewReviewRating] = useState(5);
+  const [newReviewText, setNewReviewText] = useState('');
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [reviewError, setReviewError] = useState('');
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -41,6 +46,39 @@ const ProductDetail = () => {
       });
       setAdded(true);
       setTimeout(() => setAdded(false), 1500);
+    }
+  };
+
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    if (!newReviewName || !newReviewText) {
+      setReviewError('Name and review text are required.');
+      return;
+    }
+    
+    setIsSubmittingReview(true);
+    setReviewError('');
+
+    try {
+      const res = await axios.post(`${API}/products/${id}/reviews`, {
+        name: newReviewName,
+        rating: newReviewRating,
+        text: newReviewText
+      });
+      
+      setProduct({
+        ...product,
+        reviews: [res.data.review, ...(product.reviews || [])]
+      });
+      
+      setNewReviewName('');
+      setNewReviewRating(5);
+      setNewReviewText('');
+      setShowReviewForm(false);
+    } catch (err) {
+      setReviewError(err.response?.data?.message || 'Failed to submit review.');
+    } finally {
+      setIsSubmittingReview(false);
     }
   };
 
@@ -158,7 +196,66 @@ const ProductDetail = () => {
 
         {/* Reviews Section */}
         <div className="product-reviews-section">
-          <h3 className="reviews-title">Customer Reviews</h3>
+          <div className="reviews-header-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+            <h3 className="reviews-title" style={{ marginBottom: 0 }}>Customer Reviews</h3>
+            <button 
+              className="btn btn-secondary" 
+              style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+              onClick={() => setShowReviewForm(!showReviewForm)}
+            >
+              {showReviewForm ? 'Cancel' : 'Write a Review'}
+            </button>
+          </div>
+
+          {showReviewForm && (
+            <div className="review-form-container" style={{ padding: '16px', background: 'rgba(200, 138, 58, 0.05)', borderRadius: '8px', marginBottom: '24px', border: '1px solid rgba(200, 138, 58, 0.2)' }}>
+              <h4 style={{ marginBottom: '16px', fontFamily: 'var(--font-heading)' }}>Write Your Review</h4>
+              {reviewError && <div style={{ color: 'var(--error)', marginBottom: '12px', fontSize: '0.9rem' }}>{reviewError}</div>}
+              <form onSubmit={handleSubmitReview}>
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.9rem', fontWeight: 500 }}>Your Name</label>
+                  <input 
+                    type="text" 
+                    value={newReviewName} 
+                    onChange={(e) => setNewReviewName(e.target.value)}
+                    required
+                    placeholder="Enter your name"
+                    style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid var(--border)' }}
+                  />
+                </div>
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.9rem', fontWeight: 500 }}>Rating</label>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    {[1, 2, 3, 4, 5].map(star => (
+                      <button 
+                        type="button" 
+                        key={star} 
+                        onClick={() => setNewReviewRating(star)}
+                        style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                      >
+                        <Star size={24} fill={star <= newReviewRating ? "var(--secondary)" : "none"} color={star <= newReviewRating ? "var(--secondary)" : "var(--border)"} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '0.9rem', fontWeight: 500 }}>Review</label>
+                  <textarea 
+                    value={newReviewText}
+                    onChange={(e) => setNewReviewText(e.target.value)}
+                    required
+                    placeholder="What did you think about this product?"
+                    rows="4"
+                    style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid var(--border)', fontFamily: 'inherit' }}
+                  ></textarea>
+                </div>
+                <button type="submit" className="btn btn-primary" disabled={isSubmittingReview}>
+                  {isSubmittingReview ? 'Submitting...' : 'Submit Review'}
+                </button>
+              </form>
+            </div>
+          )}
+
           <div className="reviews-summary">
             <div className="stars">
               {[...Array(5)].map((_, i) => (
@@ -171,6 +268,7 @@ const ProductDetail = () => {
 
           <div className="reviews-list">
             {[
+              ...(product.reviews || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
               {
                 id: 1,
                 name: "Rohit J.",
@@ -195,14 +293,16 @@ const ProductDetail = () => {
                 text: "Good product, exactly as described. Will definitely buy more from here for our next puja.",
                 verified: true,
               }
-            ].map(review => (
-              <div key={review.id} className="review-card">
+            ].map((review, idx) => (
+              <div key={review.id || review._id || idx} className="review-card">
                 <div className="review-header">
                   <div className="reviewer-info">
                     <span className="reviewer-name">{review.name}</span>
                     {review.verified && <span className="verified-badge">Verified Buyer</span>}
                   </div>
-                  <span className="review-date">{review.date}</span>
+                  <span className="review-date">
+                    {review.date || new Date(review.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                  </span>
                 </div>
                 <div className="review-stars">
                   {[...Array(5)].map((_, i) => (

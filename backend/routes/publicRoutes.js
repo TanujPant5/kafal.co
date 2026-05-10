@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const { getCategories } = require('../controllers/categoryController');
-const { getProducts, getProductById } = require('../controllers/productController');
+const { getProducts, getProductById, addProductReview } = require('../controllers/productController');
 const { createOrder, verifyPayment, trackOrder } = require('../controllers/orderController');
 const { loginOrRegister, getProfile, updateProfile, getOrderHistory } = require('../controllers/userController');
 
@@ -12,6 +12,7 @@ router.get('/categories', getCategories);
 // Products
 router.get('/products', getProducts);
 router.get('/products/:id', getProductById);
+router.post('/products/:id/reviews', addProductReview);
 
 // Orders
 router.post('/orders/create', createOrder);
